@@ -47,43 +47,41 @@
 const container = document.querySelector('.container');
 
 const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
-
-let user = {};
+const realFollowers = [];
 
 //My data
 axios.get('https://api.github.com/users/taranmneeld')
   .then((response) => {
-    user = response;
-    container.appendChild(createGitHubCard(user));
+    container.appendChild(createGitHubCard(response));
   })
   .catch((err) => {
     console.log(err)
   })
 
-  //followersArray data
-  followersArray.forEach(follower => {
-    axios.get(`https://api.github.com/users/${follower}`)
+//Stretch: Dynamic follower data
+axios.get('https://api.github.com/users/taranmneeld/followers')
   .then((response) => {
-    user = response;
-    container.appendChild(createGitHubCard(user));
+    response.data.forEach(follower => {
+      axios.get(`https://api.github.com/users/${follower.login}`)
+      .then((data) => {
+        container.appendChild(createGitHubCard(data));
+      })
+    });
   })
   .catch((err) => {
     console.log(err)
   })
-  });
 
-  //Stretch: Dynamic follower data
-  // axios.get('https://api.github.com/users/taranmneeld/followers')
-  // .then((response) => {
-  //   console.log(response);
-  //   response.data.forEach(follower => {
-  //     user = follower;
-  //     container.appendChild(createGitHubCard(user));
-  //   });
-  // })
-  // .catch((err) => {
-  //   console.log(err)
-  // })
+//followersArray data
+followersArray.forEach(follower => {
+  axios.get(`https://api.github.com/users/${follower}`)
+  .then((response) => {
+    container.appendChild(createGitHubCard(response));
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+});
 
 function createGitHubCard(user) {
 
