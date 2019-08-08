@@ -24,8 +24,6 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
-
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
 
@@ -46,10 +44,94 @@ const followersArray = [];
 
 */
 
-/* List of LS Instructors Github username's: 
-  tetondan
-  dustinmyers
-  justsml
-  luishrd
-  bigknell
-*/
+const container = document.querySelector('.container');
+
+const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
+
+let user = {};
+
+//My data
+axios.get('https://api.github.com/users/taranmneeld')
+  .then((response) => {
+    user = response;
+    container.appendChild(createGitHubCard(user));
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+
+  //followersArray data
+  followersArray.forEach(follower => {
+    axios.get(`https://api.github.com/users/${follower}`)
+  .then((response) => {
+    user = response;
+    container.appendChild(createGitHubCard(user));
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+  });
+
+  //Stretch: Dynamic follower data
+  // axios.get('https://api.github.com/users/taranmneeld/followers')
+  // .then((response) => {
+  //   console.log(response);
+  //   response.data.forEach(follower => {
+  //     user = follower;
+  //     container.appendChild(createGitHubCard(user));
+  //   });
+  // })
+  // .catch((err) => {
+  //   console.log(err)
+  // })
+
+function createGitHubCard(user) {
+
+  const card = document.createElement('div');
+  card.classList.add('card');
+
+  const userImage = document.createElement('img');
+  userImage.setAttribute('src', user.data.avatar_url);
+
+  const cardInfo = document.createElement('div');
+  cardInfo.classList.add('card-info');
+
+  const name = document.createElement('h3');
+  name.classList.add('name');
+  name.textContent = user.data.name;
+
+  const username = document.createElement('p');
+  username.classList.add('username');
+  username.textContent = user.data.login;
+
+  const location = document.createElement('p');
+  location.textContent = 'Location: ' + user.data.location;
+
+  const link = document.createElement('a');
+  link.setAttribute('href', user.data.html_url);
+
+  const profile = document.createElement('p');
+  profile.textContent = 'Profile: ' + link;
+
+  const followerCount = document.createElement('p');
+  followerCount.textContent = 'Followers: ' + user.data.followers;
+
+  const followingCount = document.createElement('p');
+  followingCount.textContent = 'Following: ' + user.data.following;
+
+  const bio = document.createElement('p');
+  bio.textContent = 'Bio: ' + user.data.bio;
+
+  card.appendChild(userImage);
+  card.appendChild(cardInfo);
+
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(username);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  cardInfo.appendChild(followerCount);
+  cardInfo.appendChild(followingCount);
+  cardInfo.appendChild(bio);
+
+  return card;
+}
